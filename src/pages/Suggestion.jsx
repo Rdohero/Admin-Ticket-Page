@@ -1,4 +1,4 @@
-import {useNavigate , useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {bookingDetailTicket, bookingSuggestion} from "../service/ticketAdminService.js";
 import {Backdrop, CircularProgress} from "@mui/material";
@@ -9,33 +9,35 @@ import Admin from "./Navbar.jsx";
 import swalWithBootstrapButtons from "sweetalert2";
 
 const Suggestion = () => {
-    let { direction } = useParams();
+    const location = useLocation();
+    let direction = location.state.direction;
     let { id } = useParams();
 
-    const {suggestion, date , handleDateChange, handleTypeChange, handleFlightChange,handleOriginalChange,handleClassChange,handleSalesChange} = useSuggestionLogic();
+    const {suggestion,date , handleDateChange, handleTypeChange, handleFlightChange,handleOriginalChange,handleClassChange,handleSalesChange} = useSuggestionLogic();
     const [BookingDetailsTicket, setBookingDetailTicket] = useState({});
     const [loading, setLoading] = useState(true);
     const [loading2, setLoading2] = useState(false);
     const navigate = useNavigate();
 
+    let newDateString = location.state.date.replace("T00:00:00Z", "");
+
     const sugges = async (e) => {
         e.preventDefault();
 
-        const isAnySuggestionFilled = suggestion.some(
+        const validSuggestions = suggestion.filter(
             (item) =>
-                item.type !== "" &&
-                item.flight !== "" &&
-                item.originalPrice !== "" &&
-                item.class !== "" &&
-                item.salesPrice !== "" &&
-                item.date !== null
+                item.type !== null && item.type !== "Choose a Type" &&
+                item.flight !== null &&
+                item.original !== null &&
+                item.Class !== null && item.Class !== "Choose a Class" &&
+                item.sales !== null
         );
 
-        if (!isAnySuggestionFilled) {
+        if (validSuggestions.length < 2) {
             swalWithBootstrapButtons.fire({
                 buttonsStyling: true,
                 title: "Error",
-                text: "Harap isi setidaknya satu saran sebelum mengirimkan",
+                text: "Harap isi setidaknya dua saran sebelum mengirimkan",
                 icon: "error",
                 confirmButtonColor: "#28a745",
                 confirmButtonText: "Ok !",
@@ -45,7 +47,7 @@ const Suggestion = () => {
 
         try {
             setLoading2(true);
-            await bookingSuggestion(suggestion,id,direction,BookingDetailsTicket.ticket_booking_id);
+            await bookingSuggestion(suggestion,id,direction,BookingDetailsTicket.ticket_booking_id, newDateString);
             setLoading2(false);
             navigate('/');
         } catch (error) {
@@ -61,8 +63,14 @@ const Suggestion = () => {
         }
     };
 
+    const prints = () => {
+      console.log(suggestion);
+    }
+
     useEffect(() => {
         let isMounted = true;
+
+        handleDateChange({startDate: newDateString, endDate: newDateString})
 
         bookingDetailTicket(id)
             .then(res => {
@@ -115,7 +123,7 @@ const Suggestion = () => {
                                             <div key={index} className="flex flex-col items-start">
                                                 <div className="bg-white w-[55vw] rounded-md p-6 shadow-md mb-8">
                                                     <div className="flex flex-col">
-                                                        <h1 className="text-[28px] text-center mb-5">Suggestion {index + 1}</h1>
+                                                        <h1 onClick={prints} className="text-[28px] text-center mb-5">Suggestion {index + 1}</h1>
                                                         <div className="flex flex-col gap-5">
                                                             <div className="flex flex-row gap-5">
                                                                 <select id="type" name="type" className="block w-1/2 px-4 py-3 text-base text-black border border-[#BDCBD6] rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -168,8 +176,8 @@ const Suggestion = () => {
                                                                 useRange={false}
                                                                 primaryColor={"blue"}
                                                                 asSingle={true}
-                                                                value={date[index].date}
-                                                                onChange={(newDates) => handleDateChange(index, newDates)}
+                                                                disabled
+                                                                value={date}
                                                                 inputClassName="bg-white border border-[#BDCBD6] ps-3 pe-3 w-full rounded-lg h-[5vh] focus:outline-blue-500"
                                                             />
                                                         </div>
@@ -212,7 +220,7 @@ const Suggestion = () => {
                                 </div>
 
                                 <div className="flex items-center mb-3 mt-4">
-                                    <h1 className="font-montserrat font-semibold text-[15px] ">Nik</h1>
+                                    <h1 className="font-montserrat font-semibold text-[15px] ">NIK</h1>
                                     <div className="mx-1">•</div>
                                     <h1 className="font-montserrat font-normal text-[15px] text-primary">
                                         {BookingDetailsTicket.nik}

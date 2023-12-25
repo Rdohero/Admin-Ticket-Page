@@ -3,10 +3,12 @@ import {BiUser} from "react-icons/bi";
 import {AiOutlineEye, AiOutlineEyeInvisible, AiOutlineLock} from "react-icons/ai";
 import {useState} from "react";
 import {login} from "../service/authService.js";
+import {Backdrop, CircularProgress} from "@mui/material";
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const [loadingLogin, setloadingLogin] = useState(false);
 
     // const [token, setToken] = useState("");
 
@@ -16,15 +18,17 @@ const Login = () => {
         try {
             const email = e.target.elements.email.value;
             const password = e.target.elements.password.value;
-
+            setloadingLogin(true);
             const token2 = await login(email,password);
             if (rememberMe === true) {
                 window.localStorage.setItem("token", token2);
                 window.localStorage.setItem("isLoggedIn", true);
+                setloadingLogin(false);
                 window.location.href = "/";
             } else {
                 window.sessionStorage.setItem("token", token2);
                 window.sessionStorage.setItem("isLoggedIn", true);
+                setloadingLogin(false);
                 window.location.href = "/";
             }
             e.target.elements.email.value = "";
@@ -54,6 +58,16 @@ const Login = () => {
     return (
         <div className="h-screen">
             <div className='h-full flex justify-center items-center bg-blue-500'>
+                {
+                    loadingLogin === true
+                        ?             <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open
+                        >
+                            <CircularProgress color="inherit" />
+                        </Backdrop>
+                        : null
+                }
                 <div className="bg-slate-50 rounded-[15px] p-6 shadow-lg backdrop-filter backdrop-blur-sm relative">
                     <h1 className="text-4xl text-center mb-6">Log in</h1>
                     <h1 className="font-montserrat font-medium text-xs text-[#727272] text-center mb-10">

@@ -22,7 +22,7 @@ function App() {
                 }
             />
             <Route path="/order/detail/:id" element={<OrderDetail />} />
-            <Route path="/order/detail/suggestion/:id/:direction" element={<Suggestion />} />
+            <Route path="/order/detail/suggestion/:id" element={<Suggestion />} />
         </Routes>
     )
 }

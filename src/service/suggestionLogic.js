@@ -7,17 +7,11 @@ export const useSuggestionLogic = () => {
         original: null,
         Class: null,
         sales: null,
-        date: null,
     }));
 
     const [suggestion, setSuggestion] = useState(initialSuggestion);
 
-    const [date, setDate] = useState([
-        {date: null,},
-        {date: null,},
-        {date: null,},
-        {date: null,},
-    ]);
+    const [date, setDate] = useState();
 
     const handleTypeChange = (index, newType) => {
         const updatedSuggestion = [...suggestion];
@@ -49,14 +43,8 @@ export const useSuggestionLogic = () => {
         setSuggestion(updatedSuggestion);
     };
 
-    const handleDateChange = (index, newType) => {
-        const updatedSuggestion = [...suggestion];
-        updatedSuggestion[index] = { ...suggestion[index], date: newType.startDate };
-        setSuggestion(updatedSuggestion);
-
-        const updatedDate = [...date];
-        updatedDate[index] = { ...date[index], date: newType };
-        setDate(updatedDate);
+    const handleDateChange = (newType) => {
+        setDate(newType);
     };
 
     return {suggestion, date , handleDateChange, handleTypeChange, handleFlightChange,handleOriginalChange,handleClassChange,handleSalesChange}

@@ -1,11 +1,12 @@
 import {AiOutlineArrowRight} from "react-icons/ai";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {bookingDetail} from "../service/ticketAdminService.js";
 import {useEffect, useState} from "react";
 import {Backdrop, CircularProgress} from "@mui/material";
 import Admin from "./Navbar.jsx";
 
 const OrderDetail = () => {
+    const navigate = useNavigate();
     let { id } = useParams();
 
     const [BookingDetails, setBookingDetail] = useState({});
@@ -42,11 +43,35 @@ const OrderDetail = () => {
         </div>
     }
 
+    const navigateToSuggestion = (id,direction,date) => {
+        navigate(`/order/detail/suggestion/${id}`, {
+            state: {
+                direction: direction,
+                date: date,
+            },
+        });
+    };
+
+    const prints = () => {
+        console.log(BookingDetails)
+    }
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-        return date.toLocaleDateString('en-US', options).replace(/\//g, '-')
+        const options = {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        };
+        return date.toLocaleDateString('id-ID', options)
     };
+
+    function FormatMoney(amount) {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR'
+        }).format(amount);
+    }
 
     return (
         <div className="h-screen flex flex-col bg-[#F7F9FA]">
@@ -59,50 +84,96 @@ const OrderDetail = () => {
                                 <h1 className="font-montserrat font-semibold text-primaryText text-lg mb-3">
                                     Passenger Details
                                 </h1>
-                                <div className="bg-white rounded-md p-6 shadow-md">
-                                    {BookingDetails.TicketBookingDetail.map((BookingDetail) => (
-                                        <div className="bg-white w-[55vw] rounded-md p-6 shadow-md mb-10" key={BookingDetail.ticket_booking_detail_id}>
-                                            <h1 className='font-montserrat font-semibold text-[25px] mb-4'>{BookingDetail.nama}</h1>
-                                            <div className="flex items-center mb-3 mt-4">
-                                                <h1 className="font-montserrat font-semibold text-[15px] ">Jenis Kelamin</h1>
-                                                <div className="mx-2 text-[20px]">•</div>
-                                                <h1 className="font-montserrat font-normal text-[15px] text-primary">
-                                                    {BookingDetail.gender}
-                                                </h1>
-                                            </div>
-                                            <div className="flex items-center mb-3 mt-4">
-                                                <h1 className="font-montserrat font-semibold text-[15px] ">Alamat</h1>
-                                                <div className="mx-2 text-[20px]">•</div>
-                                                <h1 className="font-montserrat font-normal text-[15px] text-primary">
-                                                    {BookingDetail.alamat}
-                                                </h1>
-                                            </div>
-                                            <div className="flex items-center mb-3 mt-4">
-                                                <h1 className="font-montserrat font-semibold text-[15px] ">Nik</h1>
-                                                <div className="mx-2 text-[20px]">•</div>
-                                                <h1 className="font-montserrat font-normal text-[15px] text-primary">
-                                                    {BookingDetail.nik}
-                                                </h1>
-                                            </div>
-                                            <div className="h-4"></div>
-                                            <a href={`/order/detail/suggestion/` + BookingDetail.ticket_booking_detail_id + `/Pergi`}>
-                                                <button type="button" className="bg-blue-600 w-full rounded-md p-3 text-base font-montserrat font-semibold text-white">
-                                                    Input Suggestion Pergi
-                                                </button>
-                                            </a>
-                                            <div className="h-4"></div>
-                                            {
-                                                BookingDetails.Direction.direction === 'Pergi' ? null : (
-                                                    <a href={`/order/detail/suggestion/` + BookingDetail.ticket_booking_detail_id + `/Pulang`}>
-                                                        <button type="button" className="bg-blue-600 w-full rounded-md p-3 text-base font-montserrat font-semibold text-white">
-                                                            Input Suggestion Pulang
-                                                        </button>
-                                                    </a>
-                                                )
-                                            }
+                                {
+                                    BookingDetails.TicketBookingDetail.length === 0
+                                        ? <div className={`bg-white rounded-md p-6 shadow-md text-red-500 justify-center flex w-full`}>
+                                        Pengguna Belum Mengisi Data Pessanger.
                                         </div>
-                                    ))}
-                                </div>
+                                        :<div className="bg-white rounded-md p-6 shadow-md">
+                                            {BookingDetails.TicketBookingDetail.map((BookingDetail) => (
+                                                <div className="bg-white w-[55vw] rounded-md p-6 shadow-md mb-10" key={BookingDetail.ticket_booking_detail_id}>
+                                                    <div>
+                                                        <div className="flex flex-row">
+                                                            <div className={`w-full flex flex-col justify-center`}>
+                                                                <h1 onClick={prints} className='font-montserrat font-semibold text-[30px] mb-2'>{BookingDetail.nama}</h1>
+                                                                <div className="flex items-center mb-3">
+                                                                    <h1 className="font-montserrat font-semibold text-[15px] ">Jenis Kelamin</h1>
+                                                                    <div className="mx-2 text-[20px]">•</div>
+                                                                    <h1 className="font-montserrat font-normal text-[15px] text-primary">
+                                                                        {BookingDetail.gender}
+                                                                    </h1>
+                                                                </div>
+                                                                <div className="flex items-center mb-3">
+                                                                    <h1 className="font-montserrat font-semibold text-[15px] ">Alamat</h1>
+                                                                    <div className="mx-2 text-[20px]">•</div>
+                                                                    <h1 className="font-montserrat font-normal text-[15px] text-primary">
+                                                                        {BookingDetail.alamat}
+                                                                    </h1>
+                                                                </div>
+                                                                <div className="flex items-center mb-3">
+                                                                    <h1 className="font-montserrat font-semibold text-[15px] ">NIK</h1>
+                                                                    <div className="mx-2 text-[20px]">•</div>
+                                                                    <h1 className="font-montserrat font-normal text-[15px] text-primary">
+                                                                        {BookingDetail.nik}
+                                                                    </h1>
+                                                                </div>
+                                                            </div>
+                                                                <div className={`w-full`}>
+                                                                    {BookingDetail.BookingDetailFlight.map((BookingDetailFlight) => (
+                                                                        <div key={BookingDetailFlight.booking_detail_flight_id} className={`rounded-lg border-[1px] items-center justify-between overflow-hidden mb-4`}>
+                                                                            <div className={BookingDetail.selected ? `flex justify-around bg-red-600 text-white py-2` : `flex justify-around bg-blue-600 text-white py-2`}>
+                                                                                <h1 className="text-center font-montserrat font-medium text-[18px]">{BookingDetailFlight.type}</h1>
+                                                                                <h1 className="text-center font-montserrat font-medium text-[18px]">{BookingDetailFlight.class}</h1>
+                                                                            </div>
+                                                                            <div className="flex justify-around my-2 text-center">
+                                                                                <div>
+                                                                                    <h1 className={`font-bold text-[18px]`}>Flight</h1>
+                                                                                    <h3 className={`text-[16px]`}>{BookingDetailFlight.flight}</h3>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <h1 className={`font-bold text-[18px]`}>Direction</h1>
+                                                                                    <h3 className={`text-[16px]`}>{BookingDetailFlight.direction}</h3>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="flex justify-around my-3 text-center">
+                                                                                <div>
+                                                                                    <h1 className={`font-bold text-[18px]`}>Date</h1>
+                                                                                    <h3 className={`text-[16px]`}>{formatDate(BookingDetailFlight.tanggal)}</h3>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <h1 className={`font-bold text-[18px]`}>Price</h1>
+                                                                                    <h3 className={`text-[16px]`}>{FormatMoney(BookingDetailFlight.sales_price)}</h3>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="h-4"></div>
+                                                    <button onClick={() => navigateToSuggestion(
+                                                        BookingDetail.ticket_booking_detail_id,
+                                                        'Pergi',
+                                                        BookingDetails.booking_date
+                                                    )} type="button" disabled={BookingDetail.selected} className="disabled:bg-gray-500 bg-blue-600 w-full rounded-md p-3 text-base font-montserrat font-semibold text-white">
+                                                        Input Suggestion Pergi
+                                                    </button>
+                                                    <div className="h-4"></div>
+                                                    {
+                                                        BookingDetails.Direction.direction === 'Pergi' ? null : (
+                                                            <button onClick={() => navigateToSuggestion(
+                                                                BookingDetail.ticket_booking_detail_id,
+                                                                'Pulang',
+                                                                BookingDetails.return_date
+                                                            )} type="button" disabled={BookingDetail.selected} className="disabled:bg-gray-500 bg-blue-600 w-full rounded-md p-3 text-base font-montserrat font-semibold text-white">
+                                                                Input Suggestion Pulang
+                                                            </button>
+                                                        )
+                                                    }
+                                                </div>
+                                            ))}
+                                        </div>
+                                        }
                             </div>
                         </div>
                         <div className="w-10"></div>

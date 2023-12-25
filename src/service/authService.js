@@ -5,7 +5,7 @@ const API_URL = "https://ticketapi-production.up.railway.app";
 export const login = async (emailHandphone,password) => {
     try {
         const response = await axios.post(`${API_URL}/login`, {
-            email_handphone: emailHandphone,
+            EmailHandphone: emailHandphone,
             password: password
         });
 

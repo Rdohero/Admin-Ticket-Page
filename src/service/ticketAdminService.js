@@ -2,14 +2,13 @@ import axios from "axios";
 
 const API_URL = "https://ticketapi-production.up.railway.app";
 
-export const bookingSuggestion = async (suggestions, TicketBookingDetailID, Direction,TicketBookingID) => {
+export const bookingSuggestion = async (suggestions, TicketBookingDetailID, Direction,TicketBookingID,date) => {
     try {
         const validSuggestions = suggestions.filter((suggestion) => {
             const {
                 type,
                 flight,
                 sales,
-                date,
                 original,
                 Class,
             } = suggestion;
@@ -18,7 +17,6 @@ export const bookingSuggestion = async (suggestions, TicketBookingDetailID, Dire
                 type !== null &&
                 flight !== null &&
                 sales !== null &&
-                date !== null &&
                 original !== null &&
                 Class !== null
             );
@@ -29,7 +27,6 @@ export const bookingSuggestion = async (suggestions, TicketBookingDetailID, Dire
                 type,
                 flight,
                 sales,
-                date,
                 original,
                 Class,
             } = suggestion;
