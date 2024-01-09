@@ -19,7 +19,7 @@ const Suggestion = () => {
     const [loading2, setLoading2] = useState(false);
     const navigate = useNavigate();
 
-    let newDateString = location.state.date.replace("T00:00:00Z", "");
+    let newDateString = location.state.date.replace("T00:00:00+07:00", "");
 
     const sugges = async (e) => {
         e.preventDefault();
@@ -47,6 +47,7 @@ const Suggestion = () => {
 
         try {
             setLoading2(true);
+            console.log(newDateString)
             await bookingSuggestion(suggestion,id,direction,BookingDetailsTicket.ticket_booking_id, newDateString);
             setLoading2(false);
             navigate('/');

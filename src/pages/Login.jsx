@@ -1,9 +1,11 @@
 import {Link} from "react-router-dom";
 import {BiUser} from "react-icons/bi";
 import {AiOutlineEye, AiOutlineEyeInvisible, AiOutlineLock} from "react-icons/ai";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {login} from "../service/authService.js";
 import {Backdrop, CircularProgress} from "@mui/material";
+import axios from "axios";
+import {bookingAll, bookingDraft, bookingOnProgress, bookingPaid} from "../service/ticketAdminService.js";
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -11,6 +13,19 @@ const Login = () => {
     const [loadingLogin, setloadingLogin] = useState(false);
 
     // const [token, setToken] = useState("");
+
+    useEffect( () => {
+        const fetchData = async () => {
+            try {
+                const all = await bookingAll();
+                console.log(all)
+            } catch (error) {
+                console.error("Error fetching booking data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();

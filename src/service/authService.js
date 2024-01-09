@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://ticketapi-production.up.railway.app";
+const API_URL = "https://secure-sawfly-certainly.ngrok-free.app";
 
 export const login = async (emailHandphone,password) => {
     try {
